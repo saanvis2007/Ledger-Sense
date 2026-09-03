@@ -1,15 +1,15 @@
 # LedgerSense
-### Autonomous Two-Tier Financial Reconciliation Agent
+### Two-Tier AI-Assisted Financial Reconciliation & Controller System
 **Razorpay AI Buildathon | Track 04: AI Finance Controller**
 
 ---
 
 ## Executive Summary
-**LedgerSense** is an autonomous financial reconciliation system designed for finance controllers to reconcile transactions across **Internal ERP Orders**, **Razorpay Gateway Settlements**, and **Bank Statement Credits**.
+**LedgerSense** is an AI-assisted financial reconciliation system designed for finance controllers to reconcile transactions across **Internal ERP Orders**, **Razorpay Gateway Settlements**, and **Bank Statement Credits**.
 
 It implements a two-tier reconciliation architecture:
 1. **Tier 1: High-Throughput Deterministic Matcher**: Handles instant 1:1:1 hash joins, validating order references, UTRs, and the standard Razorpay fee structure (**2.0% MDR + 18% GST** on MDR).
-2. **Tier 2: AI Exception Reasoning Engine**: Operates on edge cases that fail simple joins, diagnosing root causes, aggregating multi-order batch payouts, detecting custom enterprise MDR fee tiers, and tagging unresolvable discrepancies with auditable reasoning.
+2. **Tier 2: AI-Assisted Exception Analysis & Reasoning Layer**: Operates on edge cases that fail simple 1:1:1 joins (including contractual 1.5% enterprise fee tiers and multi-order batch settlement aggregations). Provides explainable root-cause diagnosis, priority risk ranking, and operational action recommendations for human controllers. Deterministic financial calculations and reconciliation matching are handled strictly by the rule engine, while AI-assisted reasoning is used for exception diagnosis, prioritization, and recommendations without performing ledger arithmetic.
 
 ---
 
@@ -105,7 +105,7 @@ This executes the 2-tier engine, prints a Rich terminal summary, and exports:
 ```bash
 python -m pytest -v tests/test_reconciliation.py
 ```
-*Guarantees 100% test pass rate across 10 deterministic invariants.*
+*The current test suite contains 10 deterministic validation tests, all passing in the latest verified run.*
 
 ### 4. Launch Streamlit Dashboard
 ```bash
