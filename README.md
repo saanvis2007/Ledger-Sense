@@ -9,7 +9,13 @@
 
 It implements a two-tier reconciliation architecture:
 1. **Tier 1: High-Throughput Deterministic Matcher**: Handles instant 1:1:1 hash joins, validating order references, UTRs, and the standard Razorpay fee structure (**2.0% MDR + 18% GST** on MDR).
-2. **Tier 2: AI-Assisted Exception Analysis & Reasoning Layer**: Operates on edge cases that fail simple 1:1:1 joins (including contractual 1.5% enterprise fee tiers and multi-order batch settlement aggregations). Provides explainable root-cause diagnosis, priority risk ranking, and operational action recommendations for human controllers. Deterministic financial calculations and reconciliation matching are handled strictly by the rule engine, while AI-assisted reasoning is used for exception diagnosis, prioritization, and recommendations without performing ledger arithmetic.
+2. **Tier 2: AI-Assisted Exception Analysis & Reasoning Layer**: Operates on edge cases that fall outside standard 1:1:1 joins (such as contractual 1.5% enterprise fee tiers and multi-order batch settlement aggregations). Tier 2 provides:
+   - **Explainable root-cause diagnosis**: Pinpoints transaction discrepancies such as dropped webhooks, customer disputes, or interbank clearing cycles.
+   - **Exception prioritization**: Ranks unresolved cases (Critical, High, Medium, Low) based on financial exposure and urgency.
+   - **Risk assessment**: Quantifies loss exposure and active evidentiary cutoff windows (e.g. 7-day dispute deadlines).
+   - **Recommended controller actions**: Suggests concrete operational remediation steps for human finance operations controllers.
+
+   *Note: All financial calculations and reconciliation matching are performed strictly by the deterministic rule engine, while AI-assisted reasoning is used for exception diagnosis, prioritization, and recommendations.*
 
 ---
 
