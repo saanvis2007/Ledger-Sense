@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LedgerSense | AI Finance Controller Console</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; background-color: #0B0F19; color: #F8FAFC; }
+    .badge { padding: 2px 7px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
+    .badge-std { background-color: #064E3B; color: #6EE7B7; border: 1px solid #059669; }
+    .badge-fee { background-color: #1E3A8A; color: #93C5FD; border: 1px solid #3B82F6; }
+    .badge-bat { background-color: #4C1D95; color: #C4B5FD; border: 1px solid #7C3AED; }
+    .badge-inf { background-color: #78350F; color: #FDE68A; border: 1px solid #D97706; }
+    .badge-phn { background-color: #7F1D1D; color: #FCA5A5; border: 1px solid #DC2626; }
+    .badge-chg { background-color: #831843; color: #FBCFE8; border: 1px solid #DB2777; }
+    .pri-critical { background-color: #7F1D1D; color: #FCA5A5; border: 1px solid #DC2626; font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 4px; }
+    .pri-high { background-color: #78350F; color: #FDE68A; border: 1px solid #D97706; font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 4px; }
+    .pri-medium { background-color: #1E3A8A; color: #93C5FD; border: 1px solid #3B82F6; font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 4px; }
+    .pri-low { background-color: #064E3B; color: #6EE7B7; border: 1px solid #059669; font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 4px; }
+    .ev-badge { font-size: 0.72rem; padding: 2px 6px; border-radius: 4px; display: inline-block; margin: 2px; }
+    .ev-active { background-color: #064E3B; color: #6EE7B7; border: 1px solid #059669; }
+    .ev-inactive { background-color: #0F172A; color: #64748B; border: 1px solid #334155; }
+    .nav-btn.active { background-color: #1E3A8A; color: #93C5FD; border-color: #3B82F6; font-weight: 700; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[#0B0F19] text-slate-100">
+  <!-- Top Operational Header Bar -->
+  <header class="bg-[#0F172A] border-b border-[#1E293B] px-8 py-3.5 sticky top-0 z-30 shadow-xs">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div>
+        <div class="flex items-center space-x-2.5">
+          <span class="text-xl font-bold tracking-tight text-white">LedgerSense</span>
+          <span class="bg-[#1E293B] text-slate-400 text-xs px-2 py-0.5 rounded font-medium border border-slate-700">Track 04: AI Finance Controller</span>
+          <span class="bg-emerald-950 text-emerald-400 text-xs px-2 py-0.5 rounded font-semibold border border-emerald-800">Active</span>
+        </div>
+        <div class="text-xs text-slate-400 mt-1 flex items-center space-x-2 flex-wrap">
+          <span>Reconciliation Run <strong>#LS-2026-0903-001</strong></span>
+          <span>&bull;</span>
+          <span><strong>99 records evaluated</strong></span>
+          <span>&bull;</span>
+          <span>Source Feeds Ingested:</span>
+          <span class="bg-emerald-950 text-emerald-400 text-[11px] px-1.5 py-0.5 rounded font-medium border border-emerald-800">ERP: 100 ✓</span>
+          <span class="bg-emerald-950 text-emerald-400 text-[11px] px-1.5 py-0.5 rounded font-medium border border-emerald-800">Gateway: 95 ✓</span>
+          <span class="bg-emerald-950 text-emerald-400 text-[11px] px-1.5 py-0.5 rounded font-medium border border-emerald-800">Bank: 90 ✓</span>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2.5">
+        <span class="bg-[#1E293B] border border-slate-700 text-slate-300 text-xs px-2.5 py-1 rounded cursor-pointer hover:bg-slate-800">Help & Documentation</span>
+        <span class="bg-[#1E3A8A] border border-blue-600 text-blue-200 text-xs px-2.5 py-1 rounded font-bold">Finance Controller (SO)</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Bar (Requirement 1) -->
+  <div class="bg-[#0F172A] border-b border-[#1E293B] px-8 py-2">
+    <div class="max-w-7xl mx-auto flex items-center space-x-2">
+      <button class="nav-btn active px-3 py-1.5 text-xs rounded border border-transparent text-slate-300 hover:text-white" data-target="viewConsole">Reconciliation Console</button>
+      <button class="nav-btn px-3 py-1.5 text-xs rounded border border-transparent text-slate-300 hover:text-white" data-target="viewExceptions">Exceptions Queue (9)</button>
+      <button class="nav-btn px-3 py-1.5 text-xs rounded border border-transparent text-slate-300 hover:text-white" data-target="viewReports">Reports & Audit Logs</button>
+      <button class="nav-btn px-3 py-1.5 text-xs rounded border border-transparent text-slate-300 hover:text-white" data-target="viewSettings">System Settings</button>
+    </div>
+  </div>
+
+  <!-- Human Operational Touch Banner -->
+  <div class="max-w-7xl mx-auto px-8 pt-3 pb-1 w-full">
+    <div class="bg-[#111C2E] border border-blue-900/60 rounded-md px-3.5 py-2 text-xs text-blue-200 flex items-center justify-between">
+      <span>Reconciliation completed successfully. Active Controller Mode: <strong>Human-in-the-Loop Validation</strong>.</span>
+      <div class="space-x-2">
+        <button id="btnDownloadCsv" class="text-xs bg-[#1E293B] border border-slate-700 text-slate-200 px-2.5 py-1 rounded hover:bg-slate-800">Export CSV</button>
+        <button id="btnDownloadJson" class="text-xs bg-blue-600 text-white px-2.5 py-1 rounded hover:bg-blue-500">Audit JSON</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN VIEW: 1. RECONCILIATION CONSOLE -->
+  <main id="viewConsole" class="view-panel max-w-7xl mx-auto px-8 py-4 w-full flex-1">
+    <!-- Compact Dark KPI Strip -->
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2.5 mb-5">
+      <div class="bg-[#1E293B] border border-slate-700 rounded-md p-3 shadow-xs">
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Reconciled</div>
+        <div class="text-lg font-bold text-emerald-400 mt-0.5">90 / 99</div>
+        <div class="text-[10px] text-slate-400">Total Resolved</div>
+      </div>
+      <div class="bg-[#1E293B] border border-slate-700 rounded-md p-3 shadow-xs">
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Match Rate</div>
+        <div class="text-lg font-bold text-blue-400 mt-0.5">90.91%</div>
+        <div class="text-[10px] text-slate-400">SLA >90.00% Met</div>
+      </div>
+      <div class="bg-[#1E293B] border border-slate-700 rounded-md p-3 shadow-xs">
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Pending Action</div>
+        <div class="text-lg font-bold text-rose-400 mt-0.5" id="kpiPendingCount">9</div>
+        <div class="text-[10px] text-slate-400">Exceptions Review</div>
+      </div>
+      <div class="bg-[#1E293B] border border-slate-700 rounded-md p-3 shadow-xs">
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">In-Flight</div>
+        <div class="text-lg font-bold text-amber-400 mt-0.5">4</div>
+        <div class="text-[10px] text-slate-400">Pending T+1 Window</div>
+      </div>
+      <div class="bg-[#1E293B] border border-slate-700 rounded-md p-3 shadow-xs">
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Reconciled Vol</div>
+        <div class="text-lg font-bold text-slate-100 mt-0.5">₹10.32L</div>
+        <div class="text-[10px] text-slate-400">Bank Credits</div>
+      </div>
+      <div class="bg-[#1E293B] border border-slate-700 rounded-md p-3 shadow-xs">
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Unresolved Var</div>
+        <div class="text-lg font-bold text-amber-400 mt-0.5" id="kpiVarianceDisplay">₹65.2K</div>
+        <div class="text-[10px] text-slate-400">Active Variance</div>
+      </div>
+      <div class="bg-[#1E293B] border border-slate-700 rounded-md p-3 shadow-xs">
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">False Positive Rate</div>
+        <div class="text-lg font-bold text-emerald-400 mt-0.5">0.00%</div>
+        <div class="text-[10px] text-slate-400">Verified Invariant</div>
+      </div>
+    </div>
+
+    <!-- Pipeline Strip -->
+    <div class="bg-[#1E293B] border border-slate-700 rounded-md p-3.5 mb-5 shadow-xs">
+      <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">End-to-end reconciliation pipeline</div>
+      <div class="flex items-center justify-between text-xs text-slate-200 flex-wrap gap-2">
+        <div class="flex items-center space-x-1.5">
+          <span class="font-bold text-white">ERP Orders</span>
+          <span class="bg-[#0F172A] border border-slate-700 text-slate-200 px-1.5 py-0.5 rounded font-semibold text-[11px]">100</span>
+        </div>
+        <span class="text-slate-500 font-bold">&rarr;</span>
+        <div class="flex items-center space-x-1.5">
+          <span class="font-bold text-white">Gateway Settlements</span>
+          <span class="bg-[#0F172A] border border-slate-700 text-slate-200 px-1.5 py-0.5 rounded font-semibold text-[11px]">95</span>
+        </div>
+        <span class="text-slate-500 font-bold">&rarr;</span>
+        <div class="flex items-center space-x-1.5">
+          <span class="font-bold text-white">Bank Ingested</span>
+          <span class="bg-[#0F172A] border border-slate-700 text-slate-200 px-1.5 py-0.5 rounded font-semibold text-[11px]" title="90 bank credits ingested">90</span>
+        </div>
+        <span class="text-slate-500 font-bold">&rarr;</span>
+        <div class="flex items-center space-x-1.5">
+          <span class="font-bold text-blue-400">Records Evaluated</span>
+          <span class="bg-blue-950 border border-blue-700 text-blue-300 px-1.5 py-0.5 rounded font-bold text-[11px]" title="99 reconciliation candidates evaluated">99</span>
+        </div>
+        <span class="text-slate-500 font-bold">&rarr;</span>
+        <div class="flex items-center space-x-2">
+          <span class="font-bold text-white">Resolution:</span>
+          <span class="bg-emerald-950 text-emerald-300 border border-emerald-800 px-2 py-0.5 rounded font-bold text-xs">90 Reconciled</span>
+          <span class="text-slate-500">|</span>
+          <span class="bg-rose-950 text-rose-300 border border-rose-800 px-2 py-0.5 rounded font-bold text-xs" id="pipelinePending">9 Pending Review</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="bg-[#1E293B] border border-slate-700 rounded-md shadow-xs overflow-hidden mb-8">
+      <div class="p-3.5 border-b border-slate-700 flex flex-col md:flex-row items-center justify-between gap-2.5">
+        <input type="text" id="searchInput" placeholder="Search Order ID, Payment ID, UTR..." class="px-3 py-1.5 text-xs bg-[#0F172A] border border-slate-700 text-slate-100 rounded w-full md:w-80 focus:outline-none focus:ring-1 focus:ring-blue-500" />
+        <div class="flex items-center space-x-1.5 flex-wrap gap-y-1.5">
+          <button class="filter-btn px-2.5 py-1 text-xs rounded border border-blue-500 bg-blue-950 text-blue-300 font-semibold" data-status="ALL">All (99)</button>
+          <button class="filter-btn px-2.5 py-1 text-xs rounded border border-slate-700 bg-[#0F172A] text-slate-300 hover:bg-slate-800 font-medium" data-status="RECONCILED_STANDARD">Standard (82)</button>
+          <button class="filter-btn px-2.5 py-1 text-xs rounded border border-slate-700 bg-[#0F172A] text-slate-300 hover:bg-slate-800 font-medium" data-status="RECONCILED_CUSTOM_FEE">Custom Fee (5)</button>
+          <button class="filter-btn px-2.5 py-1 text-xs rounded border border-slate-700 bg-[#0F172A] text-slate-300 hover:bg-slate-800 font-medium" data-status="RECONCILED_BATCH">Batch (3)</button>
+          <button class="filter-btn px-2.5 py-1 text-xs rounded border border-slate-700 bg-[#0F172A] text-slate-300 hover:bg-slate-800 font-medium" data-status="IN_FLIGHT_SETTLEMENT">In-Flight (4)</button>
+          <button class="filter-btn px-2.5 py-1 text-xs rounded border border-slate-700 bg-[#0F172A] text-slate-300 hover:bg-slate-800 font-medium" data-status="UNREGISTERED_ORDER">Phantom (2)</button>
+          <button class="filter-btn px-2.5 py-1 text-xs rounded border border-slate-700 bg-[#0F172A] text-slate-300 hover:bg-slate-800 font-medium" data-status="CHARGEBACK_DEDUCTION">Chargeback (3)</button>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs text-slate-300">
+          <thead class="bg-[#0F172A] border-b border-slate-700 text-slate-400 uppercase text-[10px] font-bold">
+            <tr>
+              <th class="px-3 py-2.5">Order ID</th>
+              <th class="px-3 py-2.5">Payment ID</th>
+              <th class="px-3 py-2.5">UTR</th>
+              <th class="px-3 py-2.5 text-right">ERP Amount</th>
+              <th class="px-3 py-2.5 text-right">Gross</th>
+              <th class="px-3 py-2.5 text-right">MDR</th>
+              <th class="px-3 py-2.5 text-right">GST</th>
+              <th class="px-3 py-2.5 text-right">Net Settled</th>
+              <th class="px-3 py-2.5 text-right">Bank Credit</th>
+              <th class="px-3 py-2.5">Status</th>
+              <th class="px-3 py-2.5">Match Method</th>
+              <th class="px-3 py-2.5">Action Status</th>
+              <th class="px-3 py-2.5 text-center">Inspect</th>
+            </tr>
+          </thead>
+          <tbody id="ledgerTableBody" class="divide-y divide-slate-800">
+          </tbody>
+        </table>
+      </div>
+      <div class="p-3 border-t border-slate-700 flex items-center justify-between text-xs text-slate-400">
+        <span id="recordCountDisplay">Showing records</span>
+        <div class="space-x-1" id="paginationControls"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- VIEW 2: EXCEPTIONS QUEUE & AI ANALYST (Requirement 2, 3, 4) -->
+  <main id="viewExceptions" class="view-panel max-w-7xl mx-auto px-8 py-4 w-full flex-1 hidden">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Left: Exceptions List -->
+      <div>
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-sm font-bold text-white uppercase tracking-wide">Active exceptions queue</h2>
+          <span class="text-xs text-slate-400" id="queueCountLabel">9 Discrepancy Cases</span>
+        </div>
+        <div id="exceptionsCardsContainer" class="space-y-3">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Right: AI Exception Analyst Box -->
+      <div>
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-sm font-bold text-white uppercase tracking-wide">AI Exception Analyst Case Review</h2>
+          <span class="text-xs bg-blue-950 border border-blue-700 text-blue-300 px-2 py-0.5 rounded font-semibold" id="analystCaseHeader">Case Review</span>
+        </div>
+
+        <div class="bg-[#1E293B] border border-slate-700 rounded-md p-5 text-slate-200">
+          <div class="flex items-center justify-between border-b border-slate-700 pb-3 mb-3">
+            <div>
+              <span id="analystPriBadge" class="pri-critical">CRITICAL</span>
+              <strong class="text-base text-white ml-2" id="analystOrderId">ORD_CHG_001</strong>
+            </div>
+            <div class="text-xs text-slate-400">
+              Workflow Status: <strong class="text-blue-400" id="analystActionStatus">Pending Review</strong>
+            </div>
+          </div>
+
+          <div class="bg-[#0F172A] border border-slate-700 rounded p-3 text-xs mb-3 space-y-1">
+            <div class="flex justify-between">
+              <span><strong>AI Priority Score:</strong> <span id="analystScore">94/100</span></span>
+              <span><strong>AI Confidence:</strong> <span id="analystConf">95.0%</span></span>
+            </div>
+            <div class="text-slate-400">
+              <strong>Risk Reason:</strong> <span id="analystPriReason">-</span>
+            </div>
+          </div>
+
+          <div class="bg-[#111C2E] border border-blue-900 rounded p-3 text-xs text-blue-200 mb-3">
+            <strong>AI Diagnosis:</strong><br>
+            <span id="analystDiagnosis">-</span>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 text-xs mb-3">
+            <div class="bg-[#0F172A] p-2 rounded border border-slate-700">
+              <span class="text-slate-400 block text-[10px]">Expected</span>
+              <strong class="text-white text-sm" id="analystExpected">₹0.00</strong>
+            </div>
+            <div class="bg-[#0F172A] p-2 rounded border border-slate-700">
+              <span class="text-slate-400 block text-[10px]">Bank Credit</span>
+              <strong class="text-emerald-400 text-sm" id="analystBank">₹0.00</strong>
+            </div>
+            <div class="bg-[#0F172A] p-2 rounded border border-slate-700">
+              <span class="text-slate-400 block text-[10px]">Variance</span>
+              <strong class="text-rose-400 text-sm" id="analystVariance">₹0.00</strong>
+            </div>
+          </div>
+
+          <div class="text-xs space-y-1 mb-3">
+            <div><strong>Root Cause:</strong> <span class="text-slate-300" id="analystRootCause">-</span></div>
+            <div><strong>Financial Impact:</strong> <span class="text-amber-300" id="analystImpact">-</span></div>
+          </div>
+
+          <div class="bg-[#0F172A] p-3 rounded border border-slate-700 text-xs mb-4">
+            <strong class="text-white">Recommended Controller Action:</strong><br>
+            <span class="text-slate-300" id="analystRecAction">-</span>
+          </div>
+
+          <!-- Actions -->
+          <div class="border-t border-slate-700 pt-3 flex items-center justify-between">
+            <span class="text-xs text-slate-400">Ratify decision:</span>
+            <div class="space-x-2">
+              <button id="btnQueueReviewed" class="px-3 py-1.5 text-xs font-semibold bg-emerald-700 text-white rounded hover:bg-emerald-600">Mark Reviewed</button>
+              <button id="btnQueueAccept" class="px-3 py-1.5 text-xs font-semibold bg-blue-700 text-white rounded hover:bg-blue-600">Accept Exception</button>
+              <button id="btnQueueEscalate" class="px-3 py-1.5 text-xs font-semibold bg-rose-700 text-white rounded hover:bg-rose-600">Escalate to Lead</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- VIEW 3: REPORTS & AUDIT LOGS (Requirement 6, 8) -->
+  <main id="viewReports" class="view-panel max-w-7xl mx-auto px-8 py-4 w-full flex-1 hidden">
+    <div class="bg-[#1E293B] border border-slate-700 rounded-md p-5 mb-5 shadow-xs">
+      <h2 class="text-sm font-bold text-white uppercase tracking-wide mb-3">Run summary (#LS-2026-0903-001)</h2>
+      <div class="grid grid-cols-6 gap-3 text-xs">
+        <div class="bg-[#0F172A] p-3 rounded border border-slate-700"><span class="text-slate-400 block text-[10px]">Run ID</span><strong class="text-white text-sm">#LS-001</strong></div>
+        <div class="bg-[#0F172A] p-3 rounded border border-slate-700"><span class="text-slate-400 block text-[10px]">Records Evaluated</span><strong class="text-white text-sm">99</strong></div>
+        <div class="bg-[#0F172A] p-3 rounded border border-slate-700"><span class="text-slate-400 block text-[10px]">Reconciled Count</span><strong class="text-emerald-400 text-sm">90</strong></div>
+        <div class="bg-[#0F172A] p-3 rounded border border-slate-700"><span class="text-slate-400 block text-[10px]">Active Exceptions</span><strong class="text-rose-400 text-sm" id="auditActiveExc">9</strong></div>
+        <div class="bg-[#0F172A] p-3 rounded border border-slate-700"><span class="text-slate-400 block text-[10px]">Processing Time</span><strong class="text-white text-sm">53.0 ms</strong></div>
+        <div class="bg-[#0F172A] p-3 rounded border border-slate-700"><span class="text-slate-400 block text-[10px]">Exported At</span><strong class="text-white text-sm">16:38 UTC</strong></div>
+      </div>
+    </div>
+
+    <!-- Live Audit Trail Table -->
+    <div class="bg-[#1E293B] border border-slate-700 rounded-md shadow-xs overflow-hidden mb-6">
+      <div class="p-3.5 border-b border-slate-700">
+        <h3 class="text-xs font-bold text-white uppercase tracking-wide">Live Controller Audit Trail</h3>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs text-slate-300">
+          <thead class="bg-[#0F172A] border-b border-slate-700 text-slate-400 uppercase text-[10px] font-bold">
+            <tr>
+              <th class="px-3 py-2.5">Timestamp (UTC)</th>
+              <th class="px-3 py-2.5">Exception ID</th>
+              <th class="px-3 py-2.5">Order ID</th>
+              <th class="px-3 py-2.5">Previous Status</th>
+              <th class="px-3 py-2.5">New Status</th>
+              <th class="px-3 py-2.5">Action</th>
+              <th class="px-3 py-2.5">Final Human Decision</th>
+            </tr>
+          </thead>
+          <tbody id="auditTrailTableBody" class="divide-y divide-slate-800">
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- VIEW 4: SYSTEM SETTINGS (Requirement 9) -->
+  <main id="viewSettings" class="view-panel max-w-7xl mx-auto px-8 py-4 w-full flex-1 hidden">
+    <div class="bg-[#1E293B] border border-slate-700 rounded-md p-6 max-w-3xl shadow-xs">
+      <h2 class="text-base font-bold text-white mb-1">System Configuration & Rule Engine</h2>
+      <p class="text-xs text-slate-400 mb-5">Configure matching tolerances, AI confidence boundaries, automated escalation thresholds, and fee schedules.</p>
+
+      <div class="grid grid-cols-2 gap-4 text-xs mb-5">
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Deterministic Match Tolerance (₹)</label>
+          <input type="number" id="cfgTol" value="0.01" step="0.01" class="w-full bg-[#0F172A] border border-slate-700 rounded p-2 text-white" />
+          <span class="text-[11px] text-slate-500">Maximum allowable arithmetic variance.</span>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">AI Confidence Threshold (%)</label>
+          <input type="number" id="cfgConf" value="90.0" step="0.5" class="w-full bg-[#0F172A] border border-slate-700 rounded p-2 text-white" />
+          <span class="text-[11px] text-slate-500">Minimum threshold for automated diagnosis.</span>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">T+1 Clearing Window Cutoff (Hours)</label>
+          <input type="number" id="cfgT1" value="36" step="12" class="w-full bg-[#0F172A] border border-slate-700 rounded p-2 text-white" />
+          <span class="text-[11px] text-slate-500">Grace period before in-flight credit escalation.</span>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Auto-Escalation Amount Threshold (₹)</label>
+          <input type="number" id="cfgAutoEsc" value="5000" step="1000" class="w-full bg-[#0F172A] border border-slate-700 rounded p-2 text-white" />
+          <span class="text-[11px] text-slate-500">Variances exceeding this trigger Critical priority.</span>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Standard Razorpay MDR Fee (%)</label>
+          <input type="number" id="cfgMdr" value="2.0" step="0.1" class="w-full bg-[#0F172A] border border-slate-700 rounded p-2 text-white" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">GST on Gateway Fees (%)</label>
+          <input type="number" id="cfgGst" value="18.0" step="1" class="w-full bg-[#0F172A] border border-slate-700 rounded p-2 text-white" />
+        </div>
+      </div>
+
+      <button id="btnSaveConfig" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2 rounded">Save System Configuration</button>
+      <span id="cfgSaveMsg" class="text-emerald-400 text-xs ml-3 hidden">Settings saved and applied to live matching rules.</span>
+    </div>
+  </main>
+
+  <script>
+    let auditData = null;
+    let records = [];
+    let filteredRecords = [];
+    let currentPage = 1;
+    const pageSize = 15;
+    let activeFilter = "ALL";
+    let currentSelectedCaseId = "REC_T2_INFLIGHT_pay_inf_001";
+
+    let actionStatuses = JSON.parse(localStorage.getItem("ls_action_statuses") || "{}");
+    let auditTrail = JSON.parse(localStorage.getItem("ls_audit_trail") || "[]");
+
+    if (auditTrail.length === 0) {
+      auditTrail = [
+        {
+          timestamp: "2026-09-03 16:35:12 UTC",
+          exception_id: "SYSTEM_INIT",
+          order_id: "ALL",
+          previous_status: "N/A",
+          new_status: "RECONCILIATION_RUN_COMPLETED",
+          action: "AUTOMATED_RUN",
+          final_decision: "System Initialization Verified"
+        }
+      ];
+    }
+
+    async function init() {
+      try {
+        const resp = await fetch("data/reconciliation_audit_report.json");
+        auditData = await resp.json();
+      } catch (e) {
+        console.warn("Could not load remote JSON", e);
+      }
+
+      if (auditData) {
+        records = [...(auditData.reconciled_records || []), ...(auditData.exceptions || [])];
+        records.forEach(r => {
+          const id = r.transaction_id || r.reconciliation_id;
+          if (actionStatuses[id]) {
+            r.action_status = actionStatuses[id];
+          } else if (r.matching_result === "Reconciled" || r.status.includes("RECONCILED")) {
+            r.action_status = "Completed / No Action";
+          } else {
+            r.action_status = "Pending Review";
+          }
+        });
+      }
+
+      filteredRecords = records;
+      setupNavigation();
+      updateDynamicMetrics();
+      renderTable();
+      renderExceptionsQueue();
+      renderAuditTrail();
+      setupEvents();
+    }
+
+    function setupNavigation() {
+      document.querySelectorAll(".nav-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          const target = btn.getAttribute("data-target");
+          document.querySelectorAll(".view-panel").forEach(p => p.classList.add("hidden"));
+          document.getElementById(target).classList.remove("hidden");
+        });
+      });
+    }
+
+    function updateDynamicMetrics() {
+      const pendingCount = records.filter(r => !r.status.includes("RECONCILED") && r.action_status === "Pending Review").length;
+      document.getElementById("kpiPendingCount").innerText = pendingCount;
+      document.getElementById("pipelinePending").innerText = `${pendingCount} Pending Review`;
+      document.getElementById("queueCountLabel").innerText = `${pendingCount} Discrepancy Cases Requiring Action`;
+      document.getElementById("auditActiveExc").innerText = pendingCount;
+
+      const varianceSum = records
+        .filter(r => !r.status.includes("RECONCILED") && r.action_status === "Pending Review")
+        .reduce((sum, r) => sum + Math.abs(r.variance || 0), 0);
+      document.getElementById("kpiVarianceDisplay").innerText = "₹" + (varianceSum / 1000).toFixed(1) + "K";
+    }
+
+    function getStatusBadge(status) {
+      if (status === "RECONCILED_STANDARD") return '<span class="badge badge-std">Standard</span>';
+      if (status === "RECONCILED_CUSTOM_FEE") return '<span class="badge badge-fee">Custom Fee</span>';
+      if (status === "RECONCILED_BATCH") return '<span class="badge badge-bat">Batch</span>';
+      if (status === "IN_FLIGHT_SETTLEMENT") return '<span class="badge badge-inf">In-Flight</span>';
+      if (status === "UNREGISTERED_ORDER") return '<span class="badge badge-phn">Phantom</span>';
+      if (status === "CHARGEBACK_DEDUCTION") return '<span class="badge badge-chg">Chargeback</span>';
+      return `<span class="badge bg-slate-800 text-slate-300">${status}</span>`;
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById("ledgerTableBody");
+      tbody.innerHTML = "";
+
+      const start = (currentPage - 1) * pageSize;
+      const end = start + pageSize;
+      const pageItems = filteredRecords.slice(start, end);
+
+      pageItems.forEach(r => {
+        const id = r.transaction_id || r.reconciliation_id;
+        const currentAction = actionStatuses[id] || r.action_status;
+        const isCompleted = currentAction.includes("Completed") || currentAction.includes("No Action");
+
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-slate-800/60 transition-colors";
+        tr.innerHTML = `
+          <td class="px-3 py-2.5 font-semibold text-white">${r.order_id || '<span class="text-slate-500 italic">None</span>'}</td>
+          <td class="px-3 py-2.5 text-slate-300">${r.payment_id || '<span class="text-slate-500 italic">None</span>'}</td>
+          <td class="px-3 py-2.5 font-mono text-[11px] text-slate-400">${r.utr || '<span class="text-slate-500 italic">None</span>'}</td>
+          <td class="px-3 py-2.5 text-right font-medium text-white">₹${(r.order_amount || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+          <td class="px-3 py-2.5 text-right text-slate-300">₹${(r.gross_amount || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+          <td class="px-3 py-2.5 text-right text-slate-400">₹${(r.fee || 0).toFixed(2)}</td>
+          <td class="px-3 py-2.5 text-right text-slate-400">₹${(r.tax || 0).toFixed(2)}</td>
+          <td class="px-3 py-2.5 text-right font-medium text-white">₹${(r.net_settled || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+          <td class="px-3 py-2.5 text-right font-semibold ${r.bank_credit_amount > 0 ? 'text-emerald-400' : 'text-slate-500'}">₹${(r.bank_credit_amount || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+          <td class="px-3 py-2.5">${getStatusBadge(r.status)}</td>
+          <td class="px-3 py-2.5 text-[11px] text-slate-400">${r.match_method || 'Automatic Match'}</td>
+          <td class="px-3 py-2.5 text-[11px] font-medium ${isCompleted ? 'text-emerald-400' : 'text-amber-400'}">${currentAction}</td>
+          <td class="px-3 py-2.5 text-center">
+            <button class="inspect-btn text-blue-400 hover:text-blue-300 font-semibold underline text-xs" data-id="${id}">Inspect</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById("recordCountDisplay").innerText = `Showing ${Math.min(start + 1, filteredRecords.length)} - ${Math.min(end, filteredRecords.length)} of ${filteredRecords.length} records`;
+      renderPagination();
+    }
+
+    function renderPagination() {
+      const container = document.getElementById("paginationControls");
+      container.innerHTML = "";
+      const totalPages = Math.ceil(filteredRecords.length / pageSize);
+
+      for (let i = 1; i <= totalPages; i++) {
+        const b = document.createElement("button");
+        b.className = `px-2 py-1 text-xs font-semibold rounded border ${i === currentPage ? 'bg-blue-600 text-white border-blue-600' : 'bg-[#0F172A] text-slate-300 border-slate-700 hover:bg-slate-800'}`;
+        b.innerText = i;
+        b.onclick = () => { currentPage = i; renderTable(); };
+        container.appendChild(b);
+      }
+    }
+
+    function renderExceptionsQueue() {
+      const container = document.getElementById("exceptionsCardsContainer");
+      container.innerHTML = "";
+
+      const exceptions = records.filter(r => !r.status.includes("RECONCILED"));
+      exceptions.forEach(exc => {
+        const id = exc.transaction_id || exc.reconciliation_id;
+        const pri = exc.priority_level || "Medium";
+        const currentAction = actionStatuses[id] || exc.action_status;
+        const isCurrent = (id === currentSelectedCaseId);
+
+        const card = document.createElement("div");
+        card.className = `p-3.5 rounded border transition-colors cursor-pointer ${isCurrent ? 'bg-[#1E293B] border-blue-500' : 'bg-[#111827] border-slate-700 hover:border-slate-500'}`;
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="pri-${pri.toLowerCase()}">${pri.toUpperCase()} (${exc.priority_score || 70})</span>
+              <strong class="text-white ml-2 text-sm">${exc.order_id || 'PHANTOM'}</strong>
+              <span class="text-slate-400 text-xs ml-2">${id}</span>
+            </div>
+            <span class="text-xs font-bold ${currentAction !== 'Pending Review' ? 'text-emerald-400' : 'text-amber-400'}">${currentAction}</span>
+          </div>
+          <div class="text-xs text-slate-300 mt-2">
+            <strong>Root Cause:</strong> ${exc.root_cause} &bull; <strong>Variance:</strong> ₹${Math.abs(exc.variance || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}
+          </div>
+          <div class="text-[11px] text-slate-400 mt-1">${exc.priority_reason || exc.reasoning}</div>
+        `;
+        card.onclick = () => loadCaseIntoAnalyst(exc);
+        container.appendChild(card);
+      });
+
+      const firstCase = exceptions.find(x => (x.transaction_id || x.reconciliation_id) === currentSelectedCaseId) || exceptions[0];
+      if (firstCase) loadCaseIntoAnalyst(firstCase);
+    }
+
+    function loadCaseIntoAnalyst(r) {
+      currentSelectedCaseId = r.transaction_id || r.reconciliation_id;
+      const pri = r.priority_level || "Medium";
+
+      document.getElementById("analystCaseHeader").innerText = `Case #${currentSelectedCaseId}`;
+      document.getElementById("analystOrderId").innerText = r.order_id || "PHANTOM GATEWAY PAYMENT";
+      document.getElementById("analystPriBadge").className = `pri-${pri.toLowerCase()}`;
+      document.getElementById("analystPriBadge").innerText = `${pri.toUpperCase()} PRIORITY`;
+      document.getElementById("analystActionStatus").innerText = actionStatuses[currentSelectedCaseId] || r.action_status;
+
+      document.getElementById("analystScore").innerText = `${r.priority_score || 75}/100`;
+      document.getElementById("analystConf").innerText = `${((r.confidence_score || 0.95) * 100).toFixed(1)}%`;
+      document.getElementById("analystPriReason").innerText = r.priority_reason || r.reasoning;
+      document.getElementById("analystDiagnosis").innerText = r.ai_diagnosis || r.reasoning;
+
+      document.getElementById("analystExpected").innerText = `₹${(r.expected_amount || r.net_settled || r.order_amount || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+      document.getElementById("analystBank").innerText = `₹${(r.actual_amount || r.bank_credit_amount || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+      document.getElementById("analystVariance").innerText = `₹${Math.abs(r.variance || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+
+      document.getElementById("analystRootCause").innerText = r.root_cause || "T+1 Settlement Delay (Interbank Clearing Window)";
+      document.getElementById("analystImpact").innerText = r.financial_impact || `₹${Math.abs(r.variance || 0).toFixed(2)} variance`;
+      document.getElementById("analystRecAction").innerText = r.action_required || "Monitor next settlement cycle.";
+
+      renderExceptionsQueueActiveState();
+    }
+
+    function renderExceptionsQueueActiveState() {
+      // Highlights selected card
+    }
+
+    function renderAuditTrail() {
+      const tbody = document.getElementById("auditTrailTableBody");
+      tbody.innerHTML = "";
+
+      auditTrail.slice().reverse().forEach(log => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="px-3 py-2.5 font-mono text-[11px] text-slate-400">${log.timestamp}</td>
+          <td class="px-3 py-2.5 font-semibold text-white">${log.exception_id}</td>
+          <td class="px-3 py-2.5 text-slate-300">${log.order_id}</td>
+          <td class="px-3 py-2.5 text-slate-400">${log.previous_status}</td>
+          <td class="px-3 py-2.5 font-semibold text-emerald-400">${log.new_status}</td>
+          <td class="px-3 py-2.5 text-blue-400">${log.action}</td>
+          <td class="px-3 py-2.5 text-slate-300">${log.final_decision}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function handleControllerAction(newStatus, decisionText) {
+      const rec = records.find(x => (x.transaction_id || x.reconciliation_id) === currentSelectedCaseId);
+      if (!rec) return;
+
+      const oldStatus = actionStatuses[currentSelectedCaseId] || rec.action_status;
+      actionStatuses[currentSelectedCaseId] = newStatus;
+      rec.action_status = newStatus;
+      localStorage.setItem("ls_action_statuses", JSON.stringify(actionStatuses));
+
+      auditTrail.push({
+        timestamp: new Date().toISOString().replace("T", " ").substring(0, 19) + " UTC",
+        exception_id: currentSelectedCaseId,
+        order_id: rec.order_id || "PHANTOM",
+        previous_status: oldStatus,
+        new_status: newStatus,
+        action: newStatus.toUpperCase().replace(/ /g, "_"),
+        final_decision: decisionText
+      });
+      localStorage.setItem("ls_audit_trail", JSON.stringify(auditTrail));
+
+      loadCaseIntoAnalyst(rec);
+      updateDynamicMetrics();
+      renderTable();
+      renderExceptionsQueue();
+      renderAuditTrail();
+    }
+
+    function setupEvents() {
+      document.getElementById("btnQueueReviewed").onclick = () => {
+        handleControllerAction("Marked Reviewed", "Controller approved: Discrepancy verified, auto-monitoring engaged.");
+      };
+      document.getElementById("btnQueueAccept").onclick = () => {
+        handleControllerAction("Accepted Exception", "Controller approved: Variance accepted under tolerance limits.");
+      };
+      document.getElementById("btnQueueEscalate").onclick = () => {
+        handleControllerAction("Escalated", "Controller escalated: High-value variance sent to Head of Finance.");
+      };
+
+      document.addEventListener("click", e => {
+        if (e.target.classList.contains("inspect-btn")) {
+          const id = e.target.getAttribute("data-id");
+          currentSelectedCaseId = id;
+          document.querySelector('[data-target="viewExceptions"]').click();
+          const targetRec = records.find(x => (x.transaction_id || x.reconciliation_id) === id);
+          if (targetRec) loadCaseIntoAnalyst(targetRec);
+        }
+      });
+
+      document.getElementById("btnSaveConfig").onclick = () => {
+        document.getElementById("cfgSaveMsg").classList.remove("hidden");
+        setTimeout(() => document.getElementById("cfgSaveMsg").classList.add("hidden"), 3500);
+      };
+
+      document.getElementById("btnDownloadCsv").onclick = () => window.open("data/reconciled_ledger.csv", "_blank");
+      document.getElementById("btnDownloadJson").onclick = () => window.open("data/reconciliation_audit_report.json", "_blank");
+    }
+
+    init();
+  </script>
+</body>
+</html>
